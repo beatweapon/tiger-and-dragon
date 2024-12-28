@@ -163,6 +163,14 @@ export class Game {
 			return true;
 		}
 
+		if (this.data.lastAttack?.tile === 0 && tile % 2 === 0) {
+			return true;
+		}
+
+		if (this.data.lastAttack?.tile === 9 && tile % 2 === 1) {
+			return true;
+		}
+
 		if (tile === this.data.lastAttack?.tile) {
 			return true;
 		}
