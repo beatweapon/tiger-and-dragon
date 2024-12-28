@@ -2,9 +2,15 @@ import type { RoomSettings } from './room';
 import { Player } from './player';
 import { winingPoint } from '$lib/logic/game/winingPoint';
 
+export interface Team {
+	isWinner: boolean;
+	players: Player[];
+}
+
 export interface GameData {
 	settings: RoomSettings;
 	players: Player[];
+	teams: Team[];
 	remainingTiles: number[];
 	currentPlayerId: string;
 	lastAttack: {
@@ -13,17 +19,33 @@ export interface GameData {
 	};
 	playPhase: 'attack' | 'defend';
 	gamePhase: 'playing' | 'gameSet' | 'gameOver';
+	winningPoints: number;
 }
 
 export class Game {
-	public data: GameData;
+	public data: GameData = {
+		settings: { battleField: 'default' },
+		teams: [],
+		players: [],
+		remainingTiles: [],
+		currentPlayerId: '',
+		lastAttack: { playerId: '', tile: 0 },
+		playPhase: 'attack',
+		gamePhase: 'playing',
+		winningPoints: 0
+	};
+
 	private roomMembers = ['1', '2', '3', '4'];
 
-	constructor() {
-		this.data = this.createNewData();
+	constructor(isTeamPlay: boolean) {
+		this.createNewData(isTeamPlay);
 	}
 
-	public createNewData(): GameData {
+	public createNewData(isTeamPlay: boolean) {
+		this.newGame(isTeamPlay);
+	}
+
+	public newGame(isTeamPlay: boolean) {
 		const players: Player[] = [];
 		this.roomMembers.forEach((id) => {
 			players.push(new Player(id, `Player ${id}`));
@@ -33,24 +55,48 @@ export class Game {
 		startingPlayer.isStartingPlayer = true;
 		const currentPlayerId = startingPlayer.id;
 
-		return {
+		const teams: Team[] = [];
+
+		if (isTeamPlay) {
+			const shuffledPlayers = players
+				.map((player) => ({ player, sort: Math.random() }))
+				.sort((a, b) => a.sort - b.sort)
+				.map(({ player }) => player);
+
+			const mid = Math.ceil(shuffledPlayers.length / 2);
+			teams.push({ isWinner: false, players: shuffledPlayers.slice(0, mid) });
+			teams.push({ isWinner: false, players: shuffledPlayers.slice(mid) });
+		} else {
+			players.forEach((player) => {
+				teams.push({ isWinner: false, players: [player] });
+			});
+		}
+
+		this.data = {
 			settings: { battleField: 'default' },
+			teams,
 			players,
 			remainingTiles: [],
 			currentPlayerId,
 			lastAttack: { playerId: currentPlayerId, tile: 0 },
 			playPhase: 'attack',
-			gamePhase: 'playing'
+			gamePhase: 'playing',
+			winningPoints: isTeamPlay ? 15 : 10
 		};
+
+		this.resetRound();
 	}
 
-	public newGame() {
+	public resetRound() {
+		this.data.gamePhase = 'playing';
+
 		this.data.remainingTiles = Array.from({ length: 8 }, (_, i) => Array(i + 1).fill(i + 1)).flat();
 		this.data.remainingTiles.push(0, 9);
 
 		this.data.players.forEach((player) => {
 			player.hand = [];
 			player.played = [];
+			player.isStartingPlayer = false;
 
 			const maxHandSize = player.id === this.data.currentPlayerId ? 10 : 9;
 
@@ -59,6 +105,12 @@ export class Game {
 				player.hand.push(this.data.remainingTiles.splice(randomIndex, 1)[0]);
 			}
 		});
+
+		const startingPlayer = this.data.players[this.pickRandomIndex(this.data.players)];
+		startingPlayer.isStartingPlayer = true;
+		this.data.currentPlayerId = startingPlayer.id;
+		this.data.lastAttack = { playerId: startingPlayer.id, tile: 0 };
+		this.data.playPhase = 'attack';
 	}
 
 	public play(index: number) {
@@ -132,6 +184,14 @@ export class Game {
 
 		winner.point += point;
 		this.data.gamePhase = 'gameSet';
+
+		this.data.teams.forEach((team) => {
+			const teamPoints = team.players.reduce((sum, player) => sum + player.point, 0);
+			if (teamPoints >= this.data.winningPoints) {
+				team.isWinner = true;
+				this.data.gamePhase = 'gameOver';
+			}
+		});
 	}
 
 	private getNextPlayerId() {
