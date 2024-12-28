@@ -1,23 +1,17 @@
 import { writable } from 'svelte/store';
 import { v4 as uuidv4 } from 'uuid';
-import {
-	collection,
-	doc,
-	getDocs,
-	addDoc,
-	updateDoc,
-	Timestamp,
-	query,
-	orderBy,
-	onSnapshot
-} from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '$lib/firebaseClient';
 
 export interface RoomSettings {
-	battleField: string;
+	masterId: string;
+	playingGameId: string;
+	members: { [key: string]: { id: string; name: string } };
+	state: 'standBy' | 'playing';
+	settings: { battleField: 'default'; isTeamBattle: boolean };
 }
 
-const DEFAULT_ROOM_SETTING = {
+const DEFAULT_ROOM_SETTING: RoomSettings = {
 	state: 'standBy',
 	masterId: '',
 	playingGameId: '',
@@ -25,7 +19,7 @@ const DEFAULT_ROOM_SETTING = {
 	settings: { battleField: 'default', isTeamBattle: true }
 };
 
-export const room = writable([]);
+export const room = writable(DEFAULT_ROOM_SETTING);
 
 let unsubscribe;
 
@@ -44,9 +38,26 @@ export const createRoom = async (newMemberName: string) => {
 export const joinRoom = async (roomId: string, newMemberName: string) => {
 	const memberId = uuidv4();
 	const roomDocRef = doc(db, 'room', roomId);
+
 	await updateDoc(roomDocRef, {
 		[`members.${memberId}`]: { id: memberId, name: newMemberName }
 	});
 
 	return { memberId };
+};
+
+export const startGame = async (roomId: string) => {
+	const roomDocRef = doc(db, 'room', roomId);
+
+	await updateDoc(roomDocRef, {
+		state: 'playing'
+	});
+};
+
+export const subscribeRoom = (roomId: string) => {
+	const roomDocRef = doc(db, 'room', roomId);
+
+	unsubscribe = onSnapshot(roomDocRef, (doc) => {
+		room.set(doc.data() as RoomSettings);
+	});
 };

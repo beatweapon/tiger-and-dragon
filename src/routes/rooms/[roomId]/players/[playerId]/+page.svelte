@@ -1,9 +1,13 @@
 <script lang="ts">
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
+	import type { RoomSettings } from '$lib/class/room';
 	import { Game } from '$lib/class/game';
 	import { writable } from 'svelte/store';
 	import Tile from '$lib/components/game/Tile.svelte';
 
-	const gameClass = new Game(true);
+	const room: Writable<RoomSettings> = getContext('room');
+	const gameClass = new Game($room);
 	const game = writable(gameClass);
 
 	game.update((g) => {
@@ -13,7 +17,7 @@
 
 	const newGame = () => {
 		game.update((g) => {
-			g.newGame(true);
+			g.newGame($room);
 			return g;
 		});
 	};

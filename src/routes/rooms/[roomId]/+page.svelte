@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { joinRoom } from '$lib/class/room';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	const roomId = $page.params.roomId;
+	const roomId = page.params.roomId;
 	let name = $state('');
 
 	const submit = async () => {

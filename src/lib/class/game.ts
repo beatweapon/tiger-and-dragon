@@ -8,7 +8,7 @@ export interface Team {
 }
 
 export interface GameData {
-	settings: RoomSettings;
+	settings: RoomSettings['settings'];
 	players: Player[];
 	teams: Team[];
 	remainingTiles: number[];
@@ -24,7 +24,7 @@ export interface GameData {
 
 export class Game {
 	public data: GameData = {
-		settings: { battleField: 'default' },
+		settings: { battleField: 'default', isTeamBattle: true },
 		teams: [],
 		players: [],
 		remainingTiles: [],
@@ -35,20 +35,14 @@ export class Game {
 		winningPoints: 0
 	};
 
-	private roomMembers = ['1', '2', '3', '4'];
-
-	constructor(isTeamPlay: boolean) {
-		this.createNewData(isTeamPlay);
+	constructor(roomSettings: RoomSettings) {
+		this.newGame(roomSettings);
 	}
 
-	public createNewData(isTeamPlay: boolean) {
-		this.newGame(isTeamPlay);
-	}
-
-	public newGame(isTeamPlay: boolean) {
+	public newGame(roomSettings: RoomSettings) {
 		const players: Player[] = [];
-		this.roomMembers.forEach((id) => {
-			players.push(new Player(id, `Player ${id}`));
+		Object.values(roomSettings.members).forEach((member) => {
+			players.push(new Player(member.id, member.name));
 		});
 
 		const startingPlayer = players[this.pickRandomIndex(players)];
@@ -57,7 +51,7 @@ export class Game {
 
 		const teams: Team[] = [];
 
-		if (isTeamPlay) {
+		if (roomSettings.settings.isTeamBattle) {
 			const shuffledPlayers = players
 				.map((player) => ({ player, sort: Math.random() }))
 				.sort((a, b) => a.sort - b.sort)
@@ -73,7 +67,7 @@ export class Game {
 		}
 
 		this.data = {
-			settings: { battleField: 'default' },
+			settings: roomSettings.settings,
 			teams,
 			players,
 			remainingTiles: [],
@@ -81,7 +75,7 @@ export class Game {
 			lastAttack: { playerId: currentPlayerId, tile: 0 },
 			playPhase: 'attack',
 			gamePhase: 'playing',
-			winningPoints: isTeamPlay ? 15 : 10
+			winningPoints: roomSettings.settings.isTeamBattle ? 15 : 10
 		};
 
 		this.resetRound();
