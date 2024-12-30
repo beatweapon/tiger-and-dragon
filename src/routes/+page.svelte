@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createRoom } from '$lib/class/room';
+	import { createRoom } from '$lib/class/room.svelte';
 	import { goto } from '$app/navigation';
 	let name = $state('');
 

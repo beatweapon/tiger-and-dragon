@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { joinRoom } from '$lib/class/room';
+	import { joinRoom } from '$lib/class/room.svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	const roomId = page.params.roomId;
