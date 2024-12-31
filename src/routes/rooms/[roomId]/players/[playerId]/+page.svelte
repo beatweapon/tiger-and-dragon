@@ -73,7 +73,7 @@
 							<Tile tile="🔥" />
 						{/if}
 						{#each player.played as tile}
-							{#if tile.isClosed && playerId === player.id}
+							{#if tile.isClosed && (room.gameData.gamePhase !== 'playing' ? true : playerId === player.id)}
 								<Tile tile="({tile.number})" />
 							{:else}
 								<Tile tile={tile.number} isClosed={tile.isClosed} />
@@ -84,7 +84,10 @@
 					<div class="hand">
 						{#each player.hand as tile, i}
 							<button class="tile_button" onclick={() => playHand(roomId, i)}>
-								<Tile {tile} isClosed={playerId !== player.id} />
+								<Tile
+									{tile}
+									isClosed={room.gameData.gamePhase !== 'playing' ? false : playerId !== player.id}
+								/>
 							</button>
 						{/each}
 						{#if player.id !== room.gameData.lastAttack.playerId && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'defend'}
@@ -98,7 +101,7 @@
 		<div>
 			<div>余り牌</div>
 			{#each room.gameData.remainingTiles as tile, i}
-				<Tile {tile} isClosed />
+				<Tile {tile} isClosed={room.gameData.gamePhase !== 'playing' ? false : true} />
 			{/each}
 		</div>
 	{:else}
