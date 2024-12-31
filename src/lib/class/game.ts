@@ -14,7 +14,7 @@ export interface Player {
 
 export interface Team {
 	isWinner: boolean;
-	players: Player[];
+	playerIds: string[];
 }
 
 export interface GameData {
@@ -33,11 +33,12 @@ export interface GameData {
 }
 
 export const resetRound = (roomId: string) => {
-	console.log('resetRound');
 	if (!room.gameData) return;
-	console.log(room.gameData);
 
-	const startingPlayer = room.gameData.players[pickRandomIndex(room.gameData.players)];
+	const lastStartingPlayer = room.gameData.players.find((player) => player.isStartingPlayer);
+	const startingPlayer = lastStartingPlayer
+		? getNextPlayer(room.gameData.players, lastStartingPlayer.id)
+		: room.gameData.players[pickRandomIndex(room.gameData.players)];
 
 	const remainingTiles = Array.from({ length: 8 }, (_, i) => Array(i + 1).fill(i + 1)).flat();
 	remainingTiles.push(0, 9);
@@ -104,10 +105,10 @@ export const play = (roomId: string, handIndex: number) => {
 		room.gameData.lastAttack.playerId = currentPlayer.id;
 		room.gameData.lastAttack.tile = tile;
 
-		room.gameData.currentPlayerId = getNextPlayerId(
+		room.gameData.currentPlayerId = getNextPlayer(
 			room.gameData.players,
 			room.gameData.currentPlayerId
-		);
+		).id;
 		room.gameData.playPhase = 'defend';
 
 		updateRoom(roomId, { gameData: room.gameData });
@@ -143,12 +144,16 @@ const canDefend = (lastAttack: { tile: number }, tile: number) => {
 export const pass = (roomId: string) => {
 	if (!room.gameData) return;
 
-	room.gameData.currentPlayerId = getNextPlayerId(
+	room.gameData.currentPlayerId = getNextPlayer(
 		room.gameData.players,
 		room.gameData.currentPlayerId
-	);
+	).id;
 
 	updateRoom(roomId, { gameData: room.gameData });
+};
+
+export const getTeamMembers = (team: Team) => {
+	return room.gameData!.players.filter((player) => team.playerIds.includes(player.id));
 };
 
 const gameSet = () => {
@@ -166,7 +171,8 @@ const gameSet = () => {
 	room.gameData.gamePhase = 'gameSet';
 
 	room.gameData.teams.forEach((team) => {
-		const teamPoints = team.players.reduce((sum, player) => sum + player.point, 0);
+		const teamPlayers = getTeamMembers(team);
+		const teamPoints = teamPlayers.reduce((sum, player) => sum + player.point, 0);
 		if (teamPoints >= room.gameData!.winningPoints) {
 			team.isWinner = true;
 			room.gameData!.gamePhase = 'gameOver';
@@ -174,9 +180,9 @@ const gameSet = () => {
 	});
 };
 
-const getNextPlayerId = (players: Player[], currentPlayerId: string) => {
+const getNextPlayer = (players: Player[], currentPlayerId: string) => {
 	const currentPlayerIndex = players.findIndex((player) => player.id === currentPlayerId);
 	const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
 
-	return players[nextPlayerIndex].id;
+	return players[nextPlayerIndex];
 };

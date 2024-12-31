@@ -3,13 +3,15 @@
 		tile: number | string;
 		isClosed?: boolean;
 	}
-	let { tile, isClosed }: Props = $props();
+	const { tile, isClosed }: Props = $props();
 
 	const isOdd = $derived.by(() => {
+		if (typeof tile === 'string') return Number(tile.replace(/[^0-9]/g, '')) % 2 !== 0;
 		return typeof tile === 'number' && tile % 2 !== 0;
 	});
 
 	const isEven = $derived.by(() => {
+		if (typeof tile === 'string') return Number(tile.replace(/[^0-9]/g, '')) % 2 === 0;
 		return typeof tile === 'number' && tile % 2 === 0;
 	});
 </script>
@@ -26,13 +28,14 @@
 	{/if}
 </div>
 
-<style>
+<style scoped>
 	.tile {
+		font-weight: bold;
 		display: inline-flex;
 		justify-content: center;
 		align-items: center;
-		width: 60px;
-		height: 80px;
+		width: var(--tile-width);
+		height: var(--tile-height);
 		box-sizing: border-box;
 		border: 1px solid black;
 		background-color: white;
@@ -40,10 +43,10 @@
 	}
 
 	.odd {
-		color: red;
+		color: var(--odd-color);
 	}
 
 	.even {
-		color: blue;
+		color: var(--even-color);
 	}
 </style>

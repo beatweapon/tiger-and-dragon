@@ -1,0 +1,21 @@
+:root {
+	--tile-width: 2.25rem;
+	--tile-height: 3rem;
+	--odd-color: #e2024b;
+	--even-color: #0096a4;
+}
+
+@media screen and (min-width: 700px) {
+	:root {
+		--tile-width: 3rem;
+		--tile-height: 4rem;
+	}
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #0f1821;
+	color: #fff;
+}

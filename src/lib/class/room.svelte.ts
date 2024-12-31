@@ -71,16 +71,16 @@ const createInitialGameData = (room: Room): GameData => {
 
 	if (room.settings.isTeamBattle) {
 		const shuffledPlayers = players
-			.map((player) => ({ player, sort: Math.random() }))
+			.map((player) => ({ playerId: player.id, sort: Math.random() }))
 			.sort((a, b) => a.sort - b.sort)
-			.map(({ player }) => player);
+			.map(({ playerId }) => playerId);
 
 		const mid = Math.ceil(shuffledPlayers.length / 2);
-		teams.push({ isWinner: false, players: shuffledPlayers.slice(0, mid) });
-		teams.push({ isWinner: false, players: shuffledPlayers.slice(mid) });
+		teams.push({ isWinner: false, playerIds: shuffledPlayers.slice(0, mid) });
+		teams.push({ isWinner: false, playerIds: shuffledPlayers.slice(mid) });
 	} else {
 		players.forEach((player) => {
-			teams.push({ isWinner: false, players: [player] });
+			teams.push({ isWinner: false, playerIds: [player.id] });
 		});
 	}
 
