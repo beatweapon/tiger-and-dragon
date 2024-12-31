@@ -85,7 +85,8 @@
 						{#each player.hand as tile, i}
 							<button
 								class="tile_button"
-								disabled={playerId === room.gameData.currentPlayerId &&
+								disabled={playerId === player.id &&
+									playerId === room.gameData.currentPlayerId &&
 									!canDefend(room.gameData.lastAttack, tile)}
 								onclick={() => playHand(roomId, i)}
 							>
