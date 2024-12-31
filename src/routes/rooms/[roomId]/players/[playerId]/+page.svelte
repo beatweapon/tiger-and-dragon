@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import type { Room } from '$lib/class/room.svelte';
 	import { startGame } from '$lib/class/room.svelte';
-	import { resetRound, play, pass, getTeamMembers } from '$lib/class/game';
+	import { resetRound, play, pass, getTeamMembers, canDefend } from '$lib/class/game';
 	import Tile from '$lib/components/game/Tile.svelte';
 
 	const room: Room = getContext('room');
@@ -83,7 +83,12 @@
 
 					<div class="hand">
 						{#each player.hand as tile, i}
-							<button class="tile_button" onclick={() => playHand(roomId, i)}>
+							<button
+								class="tile_button"
+								disabled={playerId === room.gameData.currentPlayerId &&
+									!canDefend(room.gameData.lastAttack, tile)}
+								onclick={() => playHand(roomId, i)}
+							>
 								<Tile
 									{tile}
 									isClosed={room.gameData.gamePhase !== 'playing' ? false : playerId !== player.id}
@@ -148,6 +153,10 @@
 			border: none;
 			background-color: inherit;
 			padding: 0;
+
+			&:disabled {
+				opacity: 0.5;
+			}
 		}
 
 		.played {

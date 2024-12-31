@@ -120,7 +120,7 @@ export const play = (roomId: string, handIndex: number) => {
 	}
 };
 
-const canDefend = (lastAttack: { tile: number }, tile: number) => {
+export const canDefend = (lastAttack: { tile: number }, tile: number) => {
 	if (lastAttack?.tile % 2 === 1 && tile === 9) {
 		return true;
 	}
