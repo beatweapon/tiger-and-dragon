@@ -50,10 +50,13 @@ export const resetRound = (roomId: string) => {
 
 		const maxHandSize = player.id === startingPlayer.id ? 10 : 9;
 
+		const hand = [];
 		for (let i = 0; i < maxHandSize; i++) {
 			const randomIndex = Math.floor(Math.random() * remainingTiles.length);
-			player.hand.push(remainingTiles.splice(randomIndex, 1)[0]);
+			hand.push(remainingTiles.splice(randomIndex, 1)[0]);
 		}
+
+		player.hand = hand.sort((a, b) => a - b);
 	});
 
 	room.gameData.remainingTiles = remainingTiles;
