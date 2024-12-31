@@ -2,6 +2,8 @@
 	import { joinRoom } from '$lib/class/room.svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
+	import Title from '$lib/components/Title.svelte';
+
 	const roomId = page.params.roomId;
 	let name = $state('');
 
@@ -11,10 +13,19 @@
 	};
 </script>
 
-<h1>竜虎相搏つ</h1>
+<Title />
 
-<form onsubmit={() => submit()}>
+<form class="from_area" onsubmit={() => submit()}>
 	<label for="name">名前</label>
 	<input type="text" id="name" bind:value={name} />
 	<button type="submit">ゲームに参加する</button>
 </form>
+
+<style scoped>
+	.from_area {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+	}
+</style>
