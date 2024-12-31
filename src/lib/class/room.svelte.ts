@@ -3,13 +3,14 @@ import { collection, doc, addDoc, updateDoc, onSnapshot } from 'firebase/firesto
 import { db } from '$lib/firebaseClient';
 import type { GameData, Player, Team } from './game';
 import { resetRound } from './game';
+import { BattleFieldKey } from '$lib/logic/game/winingPoint';
 
 export interface Room {
 	masterId: string;
 	playingGameId: string;
 	members: { [key: string]: { id: string; name: string } };
 	state: 'standBy' | 'playing';
-	settings: { battleField: 'default'; isTeamBattle: boolean };
+	settings: { battleField: BattleFieldKey; isTeamBattle: boolean };
 	gameData?: GameData;
 }
 
@@ -18,7 +19,7 @@ const DEFAULT_ROOM_SETTING: Room = {
 	masterId: '',
 	playingGameId: '',
 	members: {},
-	settings: { battleField: 'default', isTeamBattle: true }
+	settings: { battleField: BattleFieldKey.BattleOfTheDojo, isTeamBattle: true }
 };
 
 let room = $state({ ...DEFAULT_ROOM_SETTING });

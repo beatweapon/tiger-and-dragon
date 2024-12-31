@@ -2,6 +2,7 @@
 	import { setContext } from 'svelte';
 	import { page } from '$app/state';
 	import { room, subscribeRoom, startGame } from '$lib/class/room.svelte';
+	import Regulation from '$lib/components/game/Regulation.svelte';
 
 	subscribeRoom(page.params.roomId);
 
@@ -20,3 +21,5 @@
 {:else}
 	<slot />
 {/if}
+
+<Regulation battleFieldKey={room.settings.battleField} />
