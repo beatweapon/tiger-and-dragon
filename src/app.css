@@ -19,3 +19,7 @@ body {
 	background-color: #0f1821;
 	color: #fff;
 }
+
+* {
+	font-family: Meiryo;
+}
