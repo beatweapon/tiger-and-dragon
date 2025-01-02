@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import type { Room } from '$lib/class/room.svelte';
 	import { startGame } from '$lib/class/room.svelte';
-	import { resetRound, play, pass, getTeamMembers, canDefend } from '$lib/class/game';
+	import { resetRound, play, pass, getTeamMembers, canPlay } from '$lib/class/game';
 	import Tile from '$lib/components/game/Tile.svelte';
 
 	const room: Room = getContext('room');
@@ -51,11 +51,6 @@
 			{/each}
 		</div>
 
-		<div class="latest_attack">
-			<div>現在の攻撃</div>
-			{lastAttackerName}の<Tile tile={room.gameData.lastAttack.tile} />
-		</div>
-
 		<div class="players_area">
 			{#each room.gameData.players as player}
 				<div class="player_area">
@@ -72,11 +67,16 @@
 						{#if !player.isStartingPlayer}
 							<Tile tile="🔥" />
 						{/if}
-						{#each player.played as tile}
+						{#each player.played as tile, i}
 							{#if tile.isClosed && (room.gameData.gamePhase !== 'playing' ? true : playerId === player.id)}
 								<Tile tile="({tile.number})" />
 							{:else}
-								<Tile tile={tile.number} isClosed={tile.isClosed} />
+								<Tile
+									tile={tile.number}
+									isClosed={tile.isClosed}
+									isCurrent={room.gameData.lastAttack?.playerId === player.id &&
+										i === player.played.length - 1}
+								/>
 							{/if}
 						{/each}
 					</div>
@@ -86,9 +86,9 @@
 							<button
 								class="tile_button"
 								disabled={playerId === player.id &&
-									playerId !== room.gameData.lastAttack.playerId &&
+									playerId !== room.gameData.lastAttack?.playerId &&
 									playerId === room.gameData.currentPlayerId &&
-									!canDefend(room.gameData.lastAttack, tile)}
+									!canPlay(tile, room.gameData.lastAttack)}
 								onclick={() => playHand(roomId, i)}
 							>
 								<Tile
@@ -97,7 +97,7 @@
 								/>
 							</button>
 						{/each}
-						{#if player.id !== room.gameData.lastAttack.playerId && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'defend'}
+						{#if player.id !== room.gameData.lastAttack?.playerId && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'defend'}
 							<button onclick={() => pass(roomId)}>パス</button>
 						{/if}
 					</div>

@@ -2,8 +2,9 @@
 	interface Props {
 		tile: number | string;
 		isClosed?: boolean;
+		isCurrent?: boolean;
 	}
-	const { tile, isClosed }: Props = $props();
+	const { tile, isClosed, isCurrent }: Props = $props();
 
 	const tileNum = $derived.by(() => {
 		if (typeof tile === 'string') {
@@ -27,7 +28,7 @@
 	const tileString = $derived(String(tile).replace(/0/g, '🐅').replace(/9/g, '🐉'));
 </script>
 
-<div class="tile" class:odd={isOdd} class:even={isEven}>
+<div class="tile" class:current={isCurrent} class:odd={isOdd} class:even={isEven}>
 	{#if isClosed}
 		<span></span>
 	{:else}
@@ -48,6 +49,10 @@
 		border: 1px solid black;
 		background-color: white;
 		border-radius: 4px;
+	}
+
+	.current {
+		border: 0.3rem solid rgb(255, 123, 0);
 	}
 
 	.odd {

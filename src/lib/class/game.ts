@@ -23,7 +23,7 @@ export interface GameData {
 	teams: Team[];
 	remainingTiles: number[];
 	currentPlayerId: string;
-	lastAttack: {
+	lastAttack?: {
 		playerId: string;
 		tile: number;
 	};
@@ -63,7 +63,6 @@ export const resetRound = (roomId: string) => {
 	room.gameData.gamePhase = 'playing';
 	room.gameData.playPhase = 'attack';
 	room.gameData.currentPlayerId = startingPlayer.id;
-	room.gameData.lastAttack = { playerId: startingPlayer.id, tile: 0 };
 
 	room.state = 'playing';
 
@@ -81,16 +80,17 @@ export const play = (roomId: string, handIndex: number) => {
 	const tile = currentPlayer.hand[handIndex];
 	if (tile == null) return;
 
-	const isLoopRound = room.gameData.lastAttack.playerId === currentPlayer.id;
+	const isLoopRound = room.gameData.lastAttack?.playerId === currentPlayer.id;
 
 	if (room.gameData.playPhase === 'defend') {
-		if (!isLoopRound && !canDefend(room.gameData.lastAttack, tile)) {
+		if (!isLoopRound && !canPlay(tile, room.gameData.lastAttack)) {
 			return;
 		}
 
 		currentPlayer.played.push({ number: tile, isClosed: isLoopRound });
 		currentPlayer.hand.splice(handIndex, 1);
 		room.gameData.playPhase = 'attack';
+		delete room.gameData.lastAttack;
 
 		if (currentPlayer.hand.length === 0) {
 			gameSet();
@@ -105,8 +105,10 @@ export const play = (roomId: string, handIndex: number) => {
 		currentPlayer.played.push({ number: tile, isClosed: false });
 		currentPlayer.hand.splice(handIndex, 1);
 
-		room.gameData.lastAttack.playerId = currentPlayer.id;
-		room.gameData.lastAttack.tile = tile;
+		room.gameData.lastAttack = {
+			playerId: currentPlayer.id,
+			tile
+		};
 
 		room.gameData.currentPlayerId = getNextPlayer(
 			room.gameData.players,
@@ -120,24 +122,26 @@ export const play = (roomId: string, handIndex: number) => {
 	}
 };
 
-export const canDefend = (lastAttack: { tile: number }, tile: number) => {
-	if (lastAttack?.tile % 2 === 1 && tile === 9) {
+export const canPlay = (tile: number, lastAttack?: { tile: number }) => {
+	if (!lastAttack) return true;
+
+	if (lastAttack.tile % 2 === 1 && tile === 9) {
 		return true;
 	}
 
-	if (lastAttack?.tile % 2 === 0 && tile === 0) {
+	if (lastAttack.tile % 2 === 0 && tile === 0) {
 		return true;
 	}
 
-	if (lastAttack?.tile === 0 && tile % 2 === 0) {
+	if (lastAttack.tile === 0 && tile % 2 === 0) {
 		return true;
 	}
 
-	if (lastAttack?.tile === 9 && tile % 2 === 1) {
+	if (lastAttack.tile === 9 && tile % 2 === 1) {
 		return true;
 	}
 
-	if (tile === lastAttack?.tile) {
+	if (tile === lastAttack.tile) {
 		return true;
 	}
 
