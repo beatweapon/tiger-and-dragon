@@ -17,7 +17,10 @@
 		<div>{member.name}</div>
 	{/each}
 
-	<button onclick={() => startGame(page.params.roomId)}>ゲームを開始する</button>
+	<button
+		disabled={Object.values(room.members).length > 1}
+		onclick={() => startGame(page.params.roomId)}>ゲームを開始する</button
+	>
 {:else}
 	<slot />
 {/if}

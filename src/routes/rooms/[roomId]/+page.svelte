@@ -18,7 +18,7 @@
 <form class="from_area" onsubmit={() => submit()}>
 	<label for="name">名前</label>
 	<input type="text" id="name" bind:value={name} />
-	<button type="submit">ゲームに参加する</button>
+	<button type="submit" disabled={!name}>ゲームに参加する</button>
 </form>
 
 <style scoped>
