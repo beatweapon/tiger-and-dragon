@@ -10,13 +10,6 @@
 	const roomId = page.params.roomId;
 	const playerId = page.params.playerId;
 
-	const lastAttackerName = $derived.by(() => {
-		const lastAttack = room.gameData?.lastAttack;
-		if (!lastAttack) return '';
-
-		return room.gameData?.players.find((player) => player.id === lastAttack.playerId)?.name;
-	});
-
 	const playHand = (roomId: string, i: number) => {
 		if (room.gameData?.currentPlayerId !== playerId) return;
 
