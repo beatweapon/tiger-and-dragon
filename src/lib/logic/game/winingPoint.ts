@@ -1,5 +1,5 @@
 import type { GameData } from '$lib/class/game';
-import type { Player } from '$lib/class/player';
+import type { Player } from '$lib/class/game';
 
 export enum BattleFieldKey {
 	BattleOfTheDojo = 'battleOfTheDojo'

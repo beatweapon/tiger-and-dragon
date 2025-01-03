@@ -6,8 +6,8 @@ import { winingPoint } from '$lib/logic/game/winingPoint';
 export interface Player {
 	id: string;
 	name: string;
-	hand: number[];
-	played: { number: number; isClosed: boolean }[];
+	hand: { id: string; number: number }[];
+	played: { id: string; number: number; isClosed: boolean }[];
 	isStartingPlayer: boolean;
 	point: number;
 }
@@ -25,7 +25,7 @@ export interface GameData {
 	currentPlayerId: string;
 	lastAttack?: {
 		playerId: string;
-		tile: number;
+		number: number;
 	};
 	playPhase: 'attack' | 'defend';
 	gamePhase: 'playing' | 'gameSet' | 'gameOver';
@@ -53,10 +53,10 @@ export const resetRound = (roomId: string) => {
 		const hand = [];
 		for (let i = 0; i < maxHandSize; i++) {
 			const randomIndex = Math.floor(Math.random() * remainingTiles.length);
-			hand.push(remainingTiles.splice(randomIndex, 1)[0]);
+			hand.push({ id: `${player.id}_${i}`, number: remainingTiles.splice(randomIndex, 1)[0] });
 		}
 
-		player.hand = hand.sort((a, b) => a - b);
+		player.hand = hand.sort((a, b) => a.number - b.number);
 	});
 
 	room.gameData.remainingTiles = remainingTiles;
@@ -83,11 +83,11 @@ export const play = (roomId: string, handIndex: number) => {
 	const isLoopRound = room.gameData.lastAttack?.playerId === currentPlayer.id;
 
 	if (room.gameData.playPhase === 'defend') {
-		if (!isLoopRound && !canPlay(tile, room.gameData.lastAttack)) {
+		if (!isLoopRound && !canPlay(tile.number, room.gameData.lastAttack?.number)) {
 			return;
 		}
 
-		currentPlayer.played.push({ number: tile, isClosed: isLoopRound });
+		currentPlayer.played.push({ ...tile, isClosed: isLoopRound });
 		currentPlayer.hand.splice(handIndex, 1);
 		room.gameData.playPhase = 'attack';
 		delete room.gameData.lastAttack;
@@ -102,12 +102,12 @@ export const play = (roomId: string, handIndex: number) => {
 	}
 
 	if (room.gameData.playPhase === 'attack') {
-		currentPlayer.played.push({ number: tile, isClosed: false });
+		currentPlayer.played.push({ ...tile, isClosed: false });
 		currentPlayer.hand.splice(handIndex, 1);
 
 		room.gameData.lastAttack = {
 			playerId: currentPlayer.id,
-			tile
+			number: tile.number
 		};
 
 		room.gameData.currentPlayerId = getNextPlayer(
@@ -122,26 +122,26 @@ export const play = (roomId: string, handIndex: number) => {
 	}
 };
 
-export const canPlay = (tile: number, lastAttack?: { tile: number }) => {
-	if (!lastAttack) return true;
+export const canPlay = (playTileNumber: number, lastAttackNumber?: number) => {
+	if (lastAttackNumber == null) return true;
 
-	if (lastAttack.tile % 2 === 1 && tile === 9) {
+	if (lastAttackNumber % 2 === 1 && playTileNumber === 9) {
 		return true;
 	}
 
-	if (lastAttack.tile % 2 === 0 && tile === 0) {
+	if (lastAttackNumber % 2 === 0 && playTileNumber === 0) {
 		return true;
 	}
 
-	if (lastAttack.tile === 0 && tile % 2 === 0) {
+	if (lastAttackNumber === 0 && playTileNumber % 2 === 0) {
 		return true;
 	}
 
-	if (lastAttack.tile === 9 && tile % 2 === 1) {
+	if (lastAttackNumber === 9 && playTileNumber % 2 === 1) {
 		return true;
 	}
 
-	if (tile === lastAttack.tile) {
+	if (playTileNumber === lastAttackNumber) {
 		return true;
 	}
 

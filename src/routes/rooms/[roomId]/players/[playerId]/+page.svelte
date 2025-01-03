@@ -5,6 +5,7 @@
 	import { startGame } from '$lib/class/room.svelte';
 	import { resetRound, play, pass, getTeamMembers, canPlay } from '$lib/class/game';
 	import Tile from '$lib/components/game/Tile.svelte';
+	import { send, receive } from '$lib/animation/titleTransition';
 
 	const room: Room = getContext('room');
 	const roomId = page.params.roomId;
@@ -60,35 +61,41 @@
 						{#if !player.isStartingPlayer}
 							<Tile tile="🔥" />
 						{/if}
-						{#each player.played as tile, i}
-							{#if tile.isClosed && (room.gameData.gamePhase !== 'playing' ? true : playerId === player.id)}
-								<Tile tile="({tile.number})" />
-							{:else}
-								<Tile
-									tile={tile.number}
-									isClosed={tile.isClosed}
-									isCurrent={room.gameData.lastAttack?.playerId === player.id &&
-										i === player.played.length - 1}
-								/>
-							{/if}
+						{#each player.played as tile, i (tile.id)}
+							<div in:receive={{ key: tile.id }} out:send={{ key: tile.id }}>
+								{#if tile.isClosed && (room.gameData.gamePhase !== 'playing' ? true : playerId === player.id)}
+									<Tile tile="({tile.number})" />
+								{:else}
+									<Tile
+										tile={tile.number}
+										isClosed={tile.isClosed}
+										isCurrent={room.gameData.lastAttack?.playerId === player.id &&
+											i === player.played.length - 1}
+									/>
+								{/if}
+							</div>
 						{/each}
 					</div>
 
 					<div class="hand">
-						{#each player.hand as tile, i}
-							<button
-								class="tile_button"
-								disabled={playerId === player.id &&
-									playerId !== room.gameData.lastAttack?.playerId &&
-									playerId === room.gameData.currentPlayerId &&
-									!canPlay(tile, room.gameData.lastAttack)}
-								onclick={() => playHand(roomId, i)}
-							>
-								<Tile
-									{tile}
-									isClosed={room.gameData.gamePhase !== 'playing' ? false : playerId !== player.id}
-								/>
-							</button>
+						{#each player.hand as tile, i (tile.id)}
+							<div in:receive={{ key: tile.id }} out:send={{ key: tile.id }}>
+								<button
+									class="tile_button"
+									disabled={playerId === player.id &&
+										playerId !== room.gameData.lastAttack?.playerId &&
+										playerId === room.gameData.currentPlayerId &&
+										!canPlay(tile.number, room.gameData.lastAttack?.number)}
+									onclick={() => playHand(roomId, i)}
+								>
+									<Tile
+										tile={tile.number}
+										isClosed={room.gameData.gamePhase !== 'playing'
+											? false
+											: playerId !== player.id}
+									/>
+								</button>
+							</div>
 						{/each}
 						{#if player.id !== room.gameData.lastAttack?.playerId && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'defend'}
 							<button onclick={() => pass(roomId)}>パス</button>
