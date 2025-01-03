@@ -7,15 +7,25 @@
 	subscribeRoom(page.params.roomId);
 
 	setContext('room', room);
+
+	const copyRoomUrl = () => {
+		navigator.clipboard.writeText(`${location.origin}/rooms/${page.params.roomId}/`);
+
+		alert('URLをコピーしました');
+	};
 </script>
 
 {#if room.state === 'standBy'}
 	<h1>竜虎相搏つ -待機画面-</h1>
 	<h2>参加メンバー</h2>
 
-	{#each Object.values(room.members) as member}
-		<div>{member.name}</div>
-	{/each}
+	<div>
+		{#each Object.values(room.members) as member}
+			<div>{member.name}</div>
+		{/each}
+
+		<button onclick={copyRoomUrl}>部屋のURLをコピー</button>
+	</div>
 
 	<button
 		disabled={Object.values(room.members).length > 1}
