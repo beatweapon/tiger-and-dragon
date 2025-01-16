@@ -19,7 +19,7 @@ const DEFAULT_ROOM_SETTING: Room = {
 	masterId: '',
 	playingGameId: '',
 	members: {},
-	settings: { battleField: BattleFieldKey.BattleOfTheDojo, isTeamBattle: true },
+	settings: { battleField: BattleFieldKey.道場の戦い, isTeamBattle: true },
 };
 
 let room = $state({ ...DEFAULT_ROOM_SETTING });

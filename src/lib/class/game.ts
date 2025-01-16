@@ -6,8 +6,8 @@ import { winingPoint } from '$lib/logic/game/winingPoint';
 export interface Player {
 	id: string;
 	name: string;
-	hand: { id: string; number: number }[];
-	played: { id: string; number: number; isClosed: boolean }[];
+	hand: { id: string; number: number; isForetold: boolean }[];
+	played: { id: string; number: number; isClosed: boolean; isForetold: boolean }[];
 	isStartingPlayer: boolean;
 	point: number;
 }
@@ -53,7 +53,11 @@ export const resetRound = (roomId: string) => {
 		const hand = [];
 		for (let i = 0; i < maxHandSize; i++) {
 			const randomIndex = Math.floor(Math.random() * remainingTiles.length);
-			hand.push({ id: `${player.id}_${i}`, number: remainingTiles.splice(randomIndex, 1)[0] });
+			hand.push({
+				id: `${player.id}_${i}`,
+				number: remainingTiles.splice(randomIndex, 1)[0],
+				isForetold: false,
+			});
 		}
 
 		player.hand = hand.sort((a, b) => a.number - b.number);
@@ -172,7 +176,7 @@ const gameSet = () => {
 	if (!winner) return;
 
 	winner.played[winner.played.length - 1].isClosed = false;
-	const point = winingPoint.battleOfTheDojo(winner, room.gameData);
+	const point = winingPoint.calcWinningPoint(winner, room.gameData);
 
 	winner.point += point;
 	room.gameData.gamePhase = 'gameSet';
