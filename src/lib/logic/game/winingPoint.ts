@@ -2,7 +2,7 @@ import type { GameData } from '$lib/class/game';
 import type { Player } from '$lib/class/game';
 
 export enum BattleFieldKey {
-	BattleOfTheDojo = 'battleOfTheDojo'
+	BattleOfTheDojo = 'battleOfTheDojo',
 }
 
 interface BattleField {
@@ -25,9 +25,9 @@ const battleFields: BattleField[] = [
 			6: { point: 3, bonusRate: 1 },
 			7: { point: 4, bonusRate: 1 },
 			8: { point: 4, bonusRate: 1 },
-			9: { point: 1, bonusRate: 0 }
-		}
-	}
+			9: { point: 1, bonusRate: 0 },
+		},
+	},
 ] as const;
 
 const battleOfTheDojo = (winner: Player, gameData: GameData) => {
@@ -44,5 +44,5 @@ const battleOfTheDojo = (winner: Player, gameData: GameData) => {
 
 export const winingPoint = {
 	battleFields,
-	battleOfTheDojo
+	battleOfTheDojo,
 };

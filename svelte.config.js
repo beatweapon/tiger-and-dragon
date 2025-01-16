@@ -14,10 +14,10 @@ const config = {
 		adapter: adapter({
 			fallback: 'index.html',
 			prerender: {
-				default: true
-			}
-		})
-	}
+				default: true,
+			},
+		}),
+	},
 };
 
 export default config;

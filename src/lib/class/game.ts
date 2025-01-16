@@ -73,7 +73,7 @@ export const play = (roomId: string, handIndex: number) => {
 	if (!room.gameData) return;
 
 	const currentPlayer = room.gameData.players.find(
-		(player) => player.id === room.gameData?.currentPlayerId
+		(player) => player.id === room.gameData?.currentPlayerId,
 	);
 	if (!currentPlayer) return;
 
@@ -107,12 +107,12 @@ export const play = (roomId: string, handIndex: number) => {
 
 		room.gameData.lastAttack = {
 			playerId: currentPlayer.id,
-			number: tile.number
+			number: tile.number,
 		};
 
 		room.gameData.currentPlayerId = getNextPlayer(
 			room.gameData.players,
-			room.gameData.currentPlayerId
+			room.gameData.currentPlayerId,
 		).id;
 		room.gameData.playPhase = 'defend';
 
@@ -153,7 +153,7 @@ export const pass = (roomId: string) => {
 
 	room.gameData.currentPlayerId = getNextPlayer(
 		room.gameData.players,
-		room.gameData.currentPlayerId
+		room.gameData.currentPlayerId,
 	).id;
 
 	updateRoom(roomId, { gameData: room.gameData });

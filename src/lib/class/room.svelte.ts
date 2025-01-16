@@ -19,7 +19,7 @@ const DEFAULT_ROOM_SETTING: Room = {
 	masterId: '',
 	playingGameId: '',
 	members: {},
-	settings: { battleField: BattleFieldKey.BattleOfTheDojo, isTeamBattle: true }
+	settings: { battleField: BattleFieldKey.BattleOfTheDojo, isTeamBattle: true },
 };
 
 let room = $state({ ...DEFAULT_ROOM_SETTING });
@@ -31,7 +31,7 @@ export const createRoom = async (newMemberName: string) => {
 	const settings = {
 		...DEFAULT_ROOM_SETTING,
 		masterId: memberId,
-		members: { [memberId]: { id: memberId, name: newMemberName } }
+		members: { [memberId]: { id: memberId, name: newMemberName } },
 	};
 	const { id: roomId } = await addDoc(collection(db, 'room'), settings);
 
@@ -43,7 +43,7 @@ export const joinRoom = async (roomId: string, newMemberName: string) => {
 	const roomDocRef = doc(db, 'room', roomId);
 
 	await updateDoc(roomDocRef, {
-		[`members.${memberId}`]: { id: memberId, name: newMemberName }
+		[`members.${memberId}`]: { id: memberId, name: newMemberName },
 	});
 
 	return { memberId };
@@ -64,7 +64,7 @@ const createInitialGameData = (room: Room): GameData => {
 			hand: [],
 			played: [],
 			isStartingPlayer: false,
-			point: 0
+			point: 0,
 		});
 	});
 
@@ -91,10 +91,10 @@ const createInitialGameData = (room: Room): GameData => {
 		players,
 		remainingTiles: [],
 		currentPlayerId: '',
-		lastAttack: { playerId: '', tile: 0 },
+		lastAttack: { playerId: '', number: 0 },
 		playPhase: 'attack',
 		gamePhase: 'playing',
-		winningPoints: room.settings.isTeamBattle ? 15 : 10
+		winningPoints: room.settings.isTeamBattle ? 15 : 10,
 	};
 };
 
