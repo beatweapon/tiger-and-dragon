@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
 	import { page } from '$app/state';
-	import { room, subscribeRoom, startGame } from '$lib/class/room.svelte';
-	import Regulation from '$lib/components/game/Regulation.svelte';
+	import { room, subscribeRoom, startGame, setField } from '$lib/class/room.svelte';
+	import Regulation from '$lib/components/game/regulation/Regulation.svelte';
+	import { winingPoint } from '$lib/logic/game/winingPoint';
 
+	let { children } = $props();
 	subscribeRoom(page.params.roomId);
 
 	setContext('room', room);
@@ -27,12 +29,24 @@
 		<button onclick={copyRoomUrl}>部屋のURLをコピー</button>
 	</div>
 
-	<button
-		disabled={Object.values(room.members).length > 1}
-		onclick={() => startGame(page.params.roomId)}>ゲームを開始する</button
-	>
+	<div>
+		<h2>戦場リスト</h2>
+
+		{#each winingPoint.battleFields as field}
+			<button onclick={() => setField(page.params.roomId, field.key)}>
+				{field.name}
+			</button>
+		{/each}
+	</div>
+
+	<div>
+		<button
+			disabled={Object.values(room.members).length > 1}
+			onclick={() => startGame(page.params.roomId)}>ゲームを開始する</button
+		>
+	</div>
 {:else}
-	<slot />
+	{@render children()}
 {/if}
 
 <Regulation battleFieldKey={room.settings.battleField} />

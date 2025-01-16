@@ -49,6 +49,13 @@ export const joinRoom = async (roomId: string, newMemberName: string) => {
 	return { memberId };
 };
 
+export const setField = (roomId: string, fieldKey: BattleFieldKey) => {
+	const settings = room.settings;
+	settings.battleField = fieldKey;
+
+	updateRoom(roomId, { settings });
+};
+
 export const startGame = async (roomId: string) => {
 	const gameData = createInitialGameData(room);
 	room.gameData = gameData;

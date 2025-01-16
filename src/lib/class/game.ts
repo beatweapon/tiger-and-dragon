@@ -1,7 +1,7 @@
 import { pickRandomIndex } from '$lib/utils';
 import type { Room } from './room.svelte';
 import { room, updateRoom } from './room.svelte';
-import { winingPoint } from '$lib/logic/game/winingPoint';
+import { winingPoint, BattleFieldKey } from '$lib/logic/game/winingPoint';
 
 export interface Player {
 	id: string;

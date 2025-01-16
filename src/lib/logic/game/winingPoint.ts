@@ -15,7 +15,7 @@ export enum BattleFieldKey {
 	ゲームマーケットの戦い = 'ゲームマーケットの戦い',
 }
 
-interface BattleField {
+export interface BattleField {
 	key: BattleFieldKey;
 	name: string;
 	pointList: {
