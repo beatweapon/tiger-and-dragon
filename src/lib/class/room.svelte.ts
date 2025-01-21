@@ -69,6 +69,12 @@ export const startGame = async (roomId: string) => {
 	resetRound(roomId);
 };
 
+export const resetGame = async (roomId: string) => {
+	room.state = 'standBy';
+
+	updateRoom(roomId, { state: room.state });
+};
+
 const createInitialGameData = (room: Room): GameData => {
 	const players: Player[] = [];
 	Object.values(room.members).forEach((member) => {

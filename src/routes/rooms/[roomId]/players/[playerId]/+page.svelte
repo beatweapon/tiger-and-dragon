@@ -2,7 +2,7 @@
 	import { getContext } from 'svelte';
 	import { page } from '$app/state';
 	import type { Room } from '$lib/class/room.svelte';
-	import { startGame } from '$lib/class/room.svelte';
+	import { resetGame } from '$lib/class/room.svelte';
 	import { resetRound, play, pass, getTeamMembers, canPlay } from '$lib/class/game';
 	import Tile from '$lib/components/game/Tile.svelte';
 	import { send, receive } from '$lib/animation/titleTransition';
@@ -27,7 +27,7 @@
 
 		{#if room.gameData.gamePhase === 'gameOver'}
 			<h2>ゲームオーバー</h2>
-			<button onclick={() => startGame(roomId)}>もう一度遊ぶ</button>
+			<button onclick={() => resetGame(roomId)}>もう一度遊ぶ</button>
 		{/if}
 
 		<div class="team_area">
