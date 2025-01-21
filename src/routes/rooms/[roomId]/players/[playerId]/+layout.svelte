@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
 	import { page } from '$app/state';
-	import { room, subscribeRoom, startGame, setField } from '$lib/class/room.svelte';
+	import {
+		room,
+		subscribeRoom,
+		startGame,
+		setField,
+		setIsTeamBattle,
+	} from '$lib/class/room.svelte';
 	import Regulation from '$lib/components/game/regulation/Regulation.svelte';
 	import { winingPoint } from '$lib/logic/game/winingPoint';
 
@@ -40,8 +46,20 @@
 	</div>
 
 	<div>
+		<label>
+			<input
+				type="checkbox"
+				checked={room.settings.isTeamBattle}
+				disabled={Object.values(room.members).length !== 4}
+				onchange={() => setIsTeamBattle(page.params.roomId, !room.settings.isTeamBattle)}
+			/>
+			チーム戦
+		</label>
+	</div>
+
+	<div>
 		<button
-			disabled={Object.values(room.members).length > 1}
+			disabled={Object.values(room.members).length < 2}
 			onclick={() => startGame(page.params.roomId)}>ゲームを開始する</button
 		>
 	</div>

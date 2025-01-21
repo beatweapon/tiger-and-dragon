@@ -19,7 +19,7 @@ const DEFAULT_ROOM_SETTING: Room = {
 	masterId: '',
 	playingGameId: '',
 	members: {},
-	settings: { battleField: BattleFieldKey.道場の戦い, isTeamBattle: true },
+	settings: { battleField: BattleFieldKey.道場の戦い, isTeamBattle: false },
 };
 
 let room = $state({ ...DEFAULT_ROOM_SETTING });
@@ -56,6 +56,13 @@ export const setField = (roomId: string, fieldKey: BattleFieldKey) => {
 	updateRoom(roomId, { settings });
 };
 
+export const setIsTeamBattle = (roomId: string, isTeamBattle: boolean) => {
+	const settings = room.settings;
+	settings.isTeamBattle = isTeamBattle;
+
+	updateRoom(roomId, { settings });
+};
+
 export const startGame = async (roomId: string) => {
 	const gameData = createInitialGameData(room);
 	room.gameData = gameData;
@@ -76,6 +83,10 @@ const createInitialGameData = (room: Room): GameData => {
 	});
 
 	const teams: Team[] = [];
+
+	if (players.length !== 4) {
+		room.settings.isTeamBattle = false;
+	}
 
 	if (room.settings.isTeamBattle) {
 		const shuffledPlayers = players

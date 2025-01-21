@@ -35,6 +35,15 @@ export interface GameData {
 export const resetRound = (roomId: string) => {
 	if (!room.gameData) return;
 
+	const MAX_HAND_SIZES = {
+		5: 7,
+		4: 9,
+		3: 11,
+		2: 13,
+	};
+
+	const baseMaxHandSize = MAX_HAND_SIZES[room.gameData?.players.length as 5 | 4 | 3 | 2];
+
 	const lastStartingPlayer = room.gameData.players.find((player) => player.isStartingPlayer);
 	const startingPlayer = lastStartingPlayer
 		? getNextPlayer(room.gameData.players, lastStartingPlayer.id)
@@ -48,7 +57,7 @@ export const resetRound = (roomId: string) => {
 		player.played = [];
 		player.isStartingPlayer = startingPlayer.id === player.id ? true : false;
 
-		const maxHandSize = player.id === startingPlayer.id ? 10 : 9;
+		const maxHandSize = player.id === startingPlayer.id ? baseMaxHandSize + 1 : baseMaxHandSize;
 
 		const hand = [];
 		for (let i = 0; i < maxHandSize; i++) {
