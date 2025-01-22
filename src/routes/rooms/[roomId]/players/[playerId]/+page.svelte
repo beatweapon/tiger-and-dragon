@@ -83,6 +83,7 @@
 								<button
 									class="tile_button"
 									disabled={playerId === player.id &&
+										!!room.gameData.lastAttack?.playerId &&
 										playerId !== room.gameData.lastAttack?.playerId &&
 										playerId === room.gameData.currentPlayerId &&
 										!canPlay(tile.number, room.gameData.lastAttack?.number)}
