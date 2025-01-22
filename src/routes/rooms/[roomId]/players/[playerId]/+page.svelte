@@ -103,7 +103,7 @@
 						{#if player.id !== room.gameData.lastAttack?.playerId && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'defend'}
 							<button onclick={() => pass(roomId)}>パス</button>
 						{/if}
-						{#if player.played[player.played.length - 1].isClosed && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'attack'}
+						{#if player.played[player.played.length - 1]?.isClosed && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'attack'}
 							<button onclick={() => undo(roomId)}>戻す</button>
 						{/if}
 					</div>
