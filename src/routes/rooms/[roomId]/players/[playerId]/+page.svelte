@@ -47,7 +47,9 @@
 
 		<div class="players_area">
 			{#each room.gameData.players as player}
-				<div class="player_area">
+				<div
+					class="player_area {player.id === room.gameData.currentPlayerId ? 'current_player' : ''}"
+				>
 					<span class="player_name">{player.name}</span>
 					{#if player.hand.length === 0}
 						勝利
@@ -182,6 +184,10 @@
 			margin: 1rem;
 			display: flex;
 		}
+	}
+
+	.current_player {
+		border: 0.5rem solid rgb(255, 123, 0);
 	}
 
 	@container (width > 700px) {
