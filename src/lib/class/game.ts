@@ -161,6 +161,31 @@ export const canPlay = (playTileNumber: number, lastAttackNumber?: number) => {
 	return false;
 };
 
+export const undo = (roomId: string) => {
+	if (!room.gameData) return;
+
+	if (room.gameData.playPhase !== 'attack') return;
+
+	const currentPlayer = room.gameData.players.find(
+		(player) => player.id === room.gameData?.currentPlayerId,
+	);
+	if (!currentPlayer) return;
+
+	const lastPlayedTile = currentPlayer.played.pop();
+
+	if (!lastPlayedTile) return;
+
+	currentPlayer.hand.push({
+		id: lastPlayedTile.id,
+		number: lastPlayedTile.number,
+		isForetold: lastPlayedTile.isForetold,
+	});
+
+	room.gameData.playPhase = 'defend';
+
+	updateRoom(roomId, { gameData: room.gameData });
+};
+
 export const pass = (roomId: string) => {
 	if (!room.gameData) return;
 

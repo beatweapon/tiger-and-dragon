@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import type { Room } from '$lib/class/room.svelte';
 	import { resetGame } from '$lib/class/room.svelte';
-	import { resetRound, play, pass, getTeamMembers, canPlay } from '$lib/class/game';
+	import { resetRound, play, pass, undo, getTeamMembers, canPlay } from '$lib/class/game';
 	import Tile from '$lib/components/game/Tile.svelte';
 	import { send, receive } from '$lib/animation/titleTransition';
 
@@ -102,6 +102,9 @@
 						{/each}
 						{#if player.id !== room.gameData.lastAttack?.playerId && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'defend'}
 							<button onclick={() => pass(roomId)}>パス</button>
+						{/if}
+						{#if !!room.gameData.lastAttack?.playerId && playerId === room.gameData.currentPlayerId && player.id === room.gameData.currentPlayerId && room.gameData.playPhase === 'attack'}
+							<button onclick={() => undo(roomId)}>戻す</button>
 						{/if}
 					</div>
 				</div>
