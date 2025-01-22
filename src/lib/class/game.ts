@@ -181,6 +181,11 @@ export const undo = (roomId: string) => {
 		isForetold: lastPlayedTile.isForetold,
 	});
 
+	room.gameData.lastAttack = {
+		playerId: currentPlayer.id,
+		number: currentPlayer.played[currentPlayer.played.length - 1].number,
+	};
+
 	room.gameData.playPhase = 'defend';
 
 	updateRoom(roomId, { gameData: room.gameData });
