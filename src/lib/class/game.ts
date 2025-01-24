@@ -21,6 +21,7 @@ export interface GameData {
 	settings: Room['settings'];
 	players: Player[];
 	teams: Team[];
+	order: string[];
 	remainingTiles: number[];
 	currentPlayerId: string;
 	lastAttack?: {
@@ -46,7 +47,9 @@ export const resetRound = (roomId: string) => {
 
 	const lastStartingPlayer = room.gameData.players.find((player) => player.isStartingPlayer);
 	const startingPlayer = lastStartingPlayer
-		? getNextPlayer(room.gameData.players, lastStartingPlayer.id)
+		? room.gameData.players.find(
+				(p) => p.id === getNextPlayer(room.gameData!.order, lastStartingPlayer.id),
+			)
 		: room.gameData.players[pickRandomIndex(room.gameData.players)];
 
 	const remainingTiles = Array.from({ length: 8 }, (_, i) => Array(i + 1).fill(i + 1)).flat();
@@ -55,9 +58,9 @@ export const resetRound = (roomId: string) => {
 	room.gameData.players.forEach((player) => {
 		player.hand = [];
 		player.played = [];
-		player.isStartingPlayer = startingPlayer.id === player.id ? true : false;
+		player.isStartingPlayer = startingPlayer!.id === player.id ? true : false;
 
-		const maxHandSize = player.id === startingPlayer.id ? baseMaxHandSize + 1 : baseMaxHandSize;
+		const maxHandSize = player.id === startingPlayer!.id ? baseMaxHandSize + 1 : baseMaxHandSize;
 
 		const hand = [];
 		for (let i = 0; i < maxHandSize; i++) {
@@ -75,7 +78,7 @@ export const resetRound = (roomId: string) => {
 	room.gameData.remainingTiles = remainingTiles;
 	room.gameData.gamePhase = 'playing';
 	room.gameData.playPhase = 'attack';
-	room.gameData.currentPlayerId = startingPlayer.id;
+	room.gameData.currentPlayerId = startingPlayer!.id;
 
 	room.state = 'playing';
 
@@ -124,9 +127,9 @@ export const play = (roomId: string, handIndex: number) => {
 		};
 
 		room.gameData.currentPlayerId = getNextPlayer(
-			room.gameData.players,
+			room.gameData.order,
 			room.gameData.currentPlayerId,
-		).id;
+		);
 		room.gameData.playPhase = 'defend';
 
 		updateRoom(roomId, { gameData: room.gameData });
@@ -194,10 +197,7 @@ export const undo = (roomId: string) => {
 export const pass = (roomId: string) => {
 	if (!room.gameData) return;
 
-	room.gameData.currentPlayerId = getNextPlayer(
-		room.gameData.players,
-		room.gameData.currentPlayerId,
-	).id;
+	room.gameData.currentPlayerId = getNextPlayer(room.gameData.order, room.gameData.currentPlayerId);
 
 	updateRoom(roomId, { gameData: room.gameData });
 };
@@ -230,9 +230,9 @@ const gameSet = () => {
 	});
 };
 
-const getNextPlayer = (players: Player[], currentPlayerId: string) => {
-	const currentPlayerIndex = players.findIndex((player) => player.id === currentPlayerId);
-	const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+const getNextPlayer = (order: string[], currentPlayerId: string) => {
+	const currentPlayerIndex = order.findIndex((id) => id === currentPlayerId);
+	const nextPlayerIndex = (currentPlayerIndex + 1) % order.length;
 
-	return players[nextPlayerIndex];
+	return order[nextPlayerIndex];
 };

@@ -10,7 +10,7 @@ export interface Room {
 	playingGameId: string;
 	members: { [key: string]: { id: string; name: string } };
 	state: 'standBy' | 'playing';
-	settings: { battleField: BattleFieldKey; isTeamBattle: boolean };
+	settings: { battleField: BattleFieldKey; isTeamBattle: boolean; isAlternating: boolean };
 	gameData?: GameData;
 }
 
@@ -19,7 +19,18 @@ const DEFAULT_ROOM_SETTING: Room = {
 	masterId: '',
 	playingGameId: '',
 	members: {},
-	settings: { battleField: BattleFieldKey.道場の戦い, isTeamBattle: false },
+	settings: { battleField: BattleFieldKey.道場の戦い, isTeamBattle: false, isAlternating: false },
+	gameData: {
+		settings: { battleField: BattleFieldKey.道場の戦い, isTeamBattle: false, isAlternating: false },
+		players: [],
+		teams: [],
+		order: [],
+		remainingTiles: [],
+		currentPlayerId: '',
+		playPhase: 'attack',
+		gamePhase: 'playing',
+		winningPoints: 0,
+	},
 };
 
 let room = $state({ ...DEFAULT_ROOM_SETTING });
@@ -63,6 +74,13 @@ export const setIsTeamBattle = (roomId: string, isTeamBattle: boolean) => {
 	updateRoom(roomId, { settings });
 };
 
+export const setIsAlternating = (roomId: string, isAlternating: boolean) => {
+	const settings = room.settings;
+	settings.isAlternating = isAlternating;
+
+	updateRoom(roomId, { settings });
+};
+
 export const startGame = async (roomId: string) => {
 	const gameData = createInitialGameData(room);
 	room.gameData = gameData;
@@ -89,29 +107,39 @@ const createInitialGameData = (room: Room): GameData => {
 	});
 
 	const teams: Team[] = [];
+	const order: string[] = [];
 
 	if (players.length !== 4) {
 		room.settings.isTeamBattle = false;
 	}
 
 	if (room.settings.isTeamBattle) {
-		const shuffledPlayers = players
+		const shuffledPlayerIds = players
 			.map((player) => ({ playerId: player.id, sort: Math.random() }))
 			.sort((a, b) => a.sort - b.sort)
 			.map(({ playerId }) => playerId);
 
-		const mid = Math.ceil(shuffledPlayers.length / 2);
-		teams.push({ isWinner: false, playerIds: shuffledPlayers.slice(0, mid) });
-		teams.push({ isWinner: false, playerIds: shuffledPlayers.slice(mid) });
+		const mid = Math.ceil(shuffledPlayerIds.length / 2);
+		teams.push({ isWinner: false, playerIds: shuffledPlayerIds.slice(0, mid) });
+		teams.push({ isWinner: false, playerIds: shuffledPlayerIds.slice(mid) });
+
+		order.push(
+			shuffledPlayerIds[0],
+			shuffledPlayerIds[2],
+			shuffledPlayerIds[1],
+			shuffledPlayerIds[3],
+		);
 	} else {
 		players.forEach((player) => {
 			teams.push({ isWinner: false, playerIds: [player.id] });
+			order.push(player.id);
 		});
 	}
 
 	return {
 		settings: room.settings,
 		teams,
+		order,
 		players,
 		remainingTiles: [],
 		currentPlayerId: '',

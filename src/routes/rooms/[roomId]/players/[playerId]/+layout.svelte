@@ -7,6 +7,7 @@
 		startGame,
 		setField,
 		setIsTeamBattle,
+		setIsAlternating,
 	} from '$lib/class/room.svelte';
 	import Regulation from '$lib/components/game/regulation/Regulation.svelte';
 	import { winingPoint } from '$lib/logic/game/winingPoint';
@@ -54,6 +55,16 @@
 				onchange={() => setIsTeamBattle(page.params.roomId, !room.settings.isTeamBattle)}
 			/>
 			チーム戦
+		</label>
+
+		<label>
+			<input
+				type="checkbox"
+				checked={room.settings.isAlternating}
+				disabled={Object.values(room.members).length !== 4}
+				onchange={() => setIsAlternating(page.params.roomId, !room.settings.isAlternating)}
+			/>
+			席順交互
 		</label>
 	</div>
 
