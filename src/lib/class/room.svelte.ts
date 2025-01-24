@@ -8,7 +8,7 @@ import { BattleFieldKey } from '$lib/logic/game/winingPoint';
 export interface Room {
 	masterId: string;
 	playingGameId: string;
-	members: { [key: string]: { id: string; name: string } };
+	members: { [key: string]: { id: string; name: string; isReady?: boolean } };
 	state: 'standBy' | 'playing';
 	settings: { battleField: BattleFieldKey; isTeamBattle: boolean; isAlternating: boolean };
 	gameData?: GameData;
@@ -60,6 +60,12 @@ export const joinRoom = async (roomId: string, newMemberName: string) => {
 	return { memberId };
 };
 
+export const setReady = (roomId: string, memberId: string, isReady: boolean) => {
+	room.members[memberId].isReady = isReady;
+
+	updateRoom(roomId, { members: room.members });
+};
+
 export const setField = (roomId: string, fieldKey: BattleFieldKey) => {
 	const settings = room.settings;
 	settings.battleField = fieldKey;
@@ -95,16 +101,18 @@ export const resetGame = async (roomId: string) => {
 
 const createInitialGameData = (room: Room): GameData => {
 	const players: Player[] = [];
-	Object.values(room.members).forEach((member) => {
-		players.push({
-			id: member.id,
-			name: member.name,
-			hand: [],
-			played: [],
-			isStartingPlayer: false,
-			point: 0,
+	Object.values(room.members)
+		.filter((m) => m.isReady)
+		.forEach((member) => {
+			players.push({
+				id: member.id,
+				name: member.name,
+				hand: [],
+				played: [],
+				isStartingPlayer: false,
+				point: 0,
+			});
 		});
-	});
 
 	const teams: Team[] = [];
 	const order: string[] = [];
@@ -124,12 +132,12 @@ const createInitialGameData = (room: Room): GameData => {
 		teams.push({ isWinner: false, playerIds: shuffledPlayerIds.slice(mid) });
 
 		if (room.settings.isAlternating) {
-		order.push(
-			shuffledPlayerIds[0],
-			shuffledPlayerIds[2],
-			shuffledPlayerIds[1],
-			shuffledPlayerIds[3],
-		);
+			order.push(
+				shuffledPlayerIds[0],
+				shuffledPlayerIds[2],
+				shuffledPlayerIds[1],
+				shuffledPlayerIds[3],
+			);
 		} else {
 			order.push(
 				shuffledPlayerIds[0],

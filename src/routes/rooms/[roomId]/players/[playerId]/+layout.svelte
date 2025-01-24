@@ -8,6 +8,7 @@
 		setField,
 		setIsTeamBattle,
 		setIsAlternating,
+		setReady,
 	} from '$lib/class/room.svelte';
 	import Regulation from '$lib/components/game/regulation/Regulation.svelte';
 	import { winingPoint } from '$lib/logic/game/winingPoint';
@@ -30,10 +31,19 @@
 
 	<div>
 		{#each Object.values(room.members) as member}
-			<div>{member.name}</div>
+			<label>
+				<input
+					type="checkbox"
+					checked={member.isReady}
+					onchange={() => setReady(page.params.roomId, member.id, !member.isReady)}
+				/>
+				{member.name}
+			</label>
 		{/each}
 
-		<button onclick={copyRoomUrl}>部屋のURLをコピー</button>
+		<div>
+			<button onclick={copyRoomUrl}>部屋のURLをコピー</button>
+		</div>
 	</div>
 
 	<div>
