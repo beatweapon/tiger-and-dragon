@@ -123,12 +123,21 @@ const createInitialGameData = (room: Room): GameData => {
 		teams.push({ isWinner: false, playerIds: shuffledPlayerIds.slice(0, mid) });
 		teams.push({ isWinner: false, playerIds: shuffledPlayerIds.slice(mid) });
 
+		if (room.settings.isAlternating) {
 		order.push(
 			shuffledPlayerIds[0],
 			shuffledPlayerIds[2],
 			shuffledPlayerIds[1],
 			shuffledPlayerIds[3],
 		);
+		} else {
+			order.push(
+				shuffledPlayerIds[0],
+				shuffledPlayerIds[1],
+				shuffledPlayerIds[2],
+				shuffledPlayerIds[3],
+			);
+		}
 	} else {
 		players.forEach((player) => {
 			teams.push({ isWinner: false, playerIds: [player.id] });
