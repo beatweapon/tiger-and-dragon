@@ -17,9 +17,9 @@ body {
 	margin: 0;
 	padding: 0;
 	background-color: #0f1821;
-	color: #fff;
+	color: #ccc;
 }
 
 * {
-	font-family: Meiryo;
+	font-family: 'Yu Gothic', 'Meiryo', sans-serif;
 }

@@ -32,7 +32,7 @@
 	{#if isClosed}
 		<span></span>
 	{:else}
-		{tileString}
+		<span class="char">{tileString}</span>
 	{/if}
 </div>
 
@@ -56,12 +56,20 @@
 	}
 
 	.odd {
-		color: transparent;
-		text-shadow: 0 0 0 var(--odd-color);
+		.char {
+			background-color: var(--odd-color);
+			background-clip: text;
+			color: transparent;
+			text-shadow: 0 0 0 var(--odd-color);
+		}
 	}
 
 	.even {
-		color: transparent;
-		text-shadow: 0 0 0 var(--even-color);
+		.char {
+			background-color: var(--even-color);
+			background-clip: text;
+			color: transparent;
+			text-shadow: 0 0 0 var(--even-color);
+		}
 	}
 </style>
