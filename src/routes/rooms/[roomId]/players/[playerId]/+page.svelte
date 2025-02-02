@@ -48,8 +48,8 @@
 
 		{#if room.gameData.gamePhase === 'gameOver'}
 			<h2>ゲームオーバー</h2>
-			<button onclick={() => resetGame(roomId)}>もう一度遊ぶ</button>
 		{/if}
+		<button onclick={() => resetGame(roomId)}>ゲームを破棄してルームに戻る</button>
 
 		<div class="team_area">
 			{#each room.gameData.teams as team}
