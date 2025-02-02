@@ -16,6 +16,27 @@
 
 		play(roomId, i);
 	};
+
+	const visualOrderedPlayers = $derived.by(() => {
+		const orderSortedPlayers = [...(room.gameData?.players ?? [])].sort((a, b) => {
+			return room.gameData!.order!.indexOf(a.id) - room.gameData!.order!.indexOf(b.id);
+		});
+
+		const playerCount = room.gameData?.order?.length ?? 0;
+		const visualOrder: number[] = [];
+		for (let n = 0; n < playerCount / 2; n++) {
+			visualOrder.push(playerCount - n - 1);
+			visualOrder.push(n);
+		}
+
+		return orderSortedPlayers!.map((player, index) => {
+			return {
+				...player,
+				visualOrder: visualOrder.findIndex((o) => o === index),
+				order: index,
+			};
+		});
+	});
 </script>
 
 <div class="play_area">
@@ -46,9 +67,10 @@
 		</div>
 
 		<div class="players_area">
-			{#each room.gameData.players as player}
+			{#each visualOrderedPlayers as player}
 				<div
 					class="player_area {player.id === room.gameData.currentPlayerId ? 'current_player' : ''}"
+					style="order: {player.visualOrder}"
 				>
 					<span class="player_name">{player.name}</span>
 					{#if player.hand.length === 0}
@@ -195,9 +217,14 @@
 
 	@container (width > 700px) {
 		.players_area {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			grid-template-rows: 1fr 1fr;
+			display: flex;
+			justify-content: center;
+			flex-wrap: wrap;
+
+			.player_area {
+				width: 50%;
+				box-sizing: border-box;
+			}
 		}
 	}
 </style>
