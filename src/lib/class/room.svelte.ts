@@ -66,6 +66,12 @@ export const setReady = (roomId: string, memberId: string, isReady: boolean) => 
 	updateRoom(roomId, { members: room.members });
 };
 
+export const setName = (roomId: string, memberId: string, name: string) => {
+	room.members[memberId].name = name;
+
+	updateRoom(roomId, { members: room.members });
+};
+
 export const setField = (roomId: string, fieldKey: BattleFieldKey) => {
 	const settings = room.settings;
 	settings.battleField = fieldKey;

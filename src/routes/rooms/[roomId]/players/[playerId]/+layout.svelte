@@ -10,6 +10,7 @@
 		setIsAlternating,
 		setReady,
 	} from '$lib/class/room.svelte';
+	import NameInput from '$lib/components/room/NameInput.svelte';
 	import Regulation from '$lib/components/game/regulation/Regulation.svelte';
 	import { winingPoint } from '$lib/logic/game/winingPoint';
 
@@ -30,6 +31,15 @@
 
 {#if room.state === 'standBy'}
 	<h1>竜虎相搏つ -待機画面-</h1>
+
+	{#if room.members[page.params.playerId]?.name != null}
+		<NameInput
+			roomId={page.params.roomId}
+			playerId={page.params.playerId}
+			name={room.members[page.params.playerId].name}
+		/>
+	{/if}
+
 	<h2>参加メンバー</h2>
 
 	<div>
