@@ -23,6 +23,9 @@
 
 		alert('URLをコピーしました');
 	};
+
+	const readyMembers = $derived(Object.values(room.members).filter((member) => member.isReady));
+	const isTeamBattle = $derived(room.settings.isTeamBattle && readyMembers.length === 4);
 </script>
 
 {#if room.state === 'standBy'}
@@ -60,8 +63,8 @@
 		<label>
 			<input
 				type="checkbox"
-				checked={room.settings.isTeamBattle}
-				disabled={Object.values(room.members).length !== 4}
+				checked={isTeamBattle}
+				disabled={readyMembers.length !== 4}
 				onchange={() => setIsTeamBattle(page.params.roomId, !room.settings.isTeamBattle)}
 			/>
 			チーム戦
@@ -71,7 +74,7 @@
 			<input
 				type="checkbox"
 				checked={room.settings.isAlternating}
-				disabled={Object.values(room.members).length !== 4}
+				disabled={readyMembers.length !== 4}
 				onchange={() => setIsAlternating(page.params.roomId, !room.settings.isAlternating)}
 			/>
 			席順交互
