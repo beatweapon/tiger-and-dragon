@@ -53,11 +53,17 @@
 
 		<div class="team_area">
 			{#each room.gameData.teams as team}
-				<div class="team {team.isWinner ? 'winner' : ''}">
+				<div class="team {room.gameData.settings.isTeamBattle ? 'team-battle' : ''}">
 					<div class="team_name">
+						{#if team.isWinner}
+							🏆
+						{/if}
 						{#each getTeamMembers(team) as player}
 							<div class="player_name">{player.name}</div>
 						{/each}
+						{#if team.isWinner}
+							🎉
+						{/if}
 					</div>
 					<div>
 						Point: {getTeamMembers(team).reduce((sum, player) => sum + player.point, 0)}
@@ -69,7 +75,11 @@
 		<div class="players_area">
 			{#each visualOrderedPlayers as player}
 				<div
-					class="player_area {player.id === room.gameData.currentPlayerId ? 'current_player' : ''}"
+					class="
+						player_area
+						{room.gameData.settings.isTeamBattle ? 'team-battle' : ''}
+						{player.id === room.gameData.currentPlayerId ? 'current_player' : ''}
+					"
 					style="order: {player.visualOrder}"
 				>
 					<span class="player_name">{player.name}</span>
@@ -155,7 +165,7 @@
 
 		.team {
 			padding: 1em;
-			border: 1px solid black;
+			border: 1px solid #fff;
 			border-radius: 4px;
 
 			.team_name {
@@ -167,8 +177,14 @@
 		}
 	}
 
-	.winner {
-		color: red;
+	.team-battle:nth-child(odd) {
+		/* border-color: var(--odd-color); */
+		background-color: var(--odd-color);
+	}
+
+	.team-battle:nth-child(even) {
+		/* border-color: var(--even-color); */
+		background-color: var(--even-color);
 	}
 
 	.player_area {
